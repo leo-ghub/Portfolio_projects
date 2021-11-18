@@ -1,0 +1,84 @@
+These are the SQL queries used to obtained the relevant information I needed to produce the 
+following Tableau dashboard: https://public.tableau.com/app/profile/leandro.falero/viz/CovidDataAnalysis_16339003219740/Dashboard1
+
+SELECT 
+    location,
+    date,
+    population,
+    total_cases,
+    new_cases,
+    total_deaths
+FROM
+    covid_deaths
+WHERE
+    continent IS NOT NULL
+ORDER BY 1 , 2;
+
+-- total cases VS total deaths
+-- shows estimate of your chances of dying of covid
+
+SELECT 
+    location,
+    date,
+    population,
+    total_cases,
+    total_deaths,
+    (total_deaths / total_cases) * 100 AS death_ratio
+FROM
+    covid_deaths
+WHERE
+    location LIKE ('%states%')
+ORDER BY 1 , 2;
+
+
+
+-- total cases vs population
+-- shows what percentaje of population has covid
+
+SELECT 
+    location,
+    date,
+    population,
+    total_cases,
+    total_deaths,
+    (total_cases / population) * 100 AS infected_pop_ratio
+FROM
+    covid_deaths
+WHERE
+    location LIKE ('%states%')
+ORDER BY 1 , 2;
+
+
+
+-- countries with highest infection rate compared to population
+
+SELECT 
+    location,
+    population,
+    MAX(total_cases) AS highestInfectionCount,
+    total_deaths,
+    MAX((total_cases / population)) * 100 AS infected_pop_ratio
+FROM
+    covid_deaths
+WHERE
+    continent IS NOT NULL
+GROUP BY location , population
+ORDER BY 5 DESC;
+
+-- Countries with Highest Death Count per Population
+
+Select Location, MAX(cast(Total_deaths as SIGNED integer)) as TotalDeathCount
+From covid_deaths
+Where continent is not null 
+Group by Location
+order by TotalDeathCount desc;
+
+
+-- Showing contintents with the highest death count per population
+
+Select continent, MAX(cast(Total_deaths as SIGNED integer)) as TotalDeathCount
+From covid_deaths
+Where continent is not null 
+Group by continent
+order by TotalDeathCount desc;
+
